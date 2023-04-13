@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Imports\BarriosImport;
 use App\Models\MaeBarrio;
 use App\Models\MaeCiudad;
 use Illuminate\Http\Request;
@@ -30,18 +31,21 @@ class MaeBarriosController extends Controller
 
     public function create()
     {
-        $ciudad = MaeCiudad::findOrFail(Session::get('byCiudad'));
-        return Inertia::render(
-            'DM_Barrios/Form',
-            [
-                'paisNombre' => $ciudad->maeDepartamento->maePais->pais,
-                'paisID' => $ciudad->maeDepartamento->maePais->id,
-                'departamentoNombre' =>  $ciudad->maeDepartamento->departamento,
-                'departamentoID' => $ciudad->maeDepartamento->id,
-                'ciudadNombre' =>  $ciudad->ciudad,
-                'ciudadID' => $ciudad->id
-            ]
-        );
+        if ((Session::get('byCiudad')) != null) {
+            $ciudad = MaeCiudad::findOrFail(Session::get('byCiudad'));
+            return Inertia::render(
+                'DM_Barrios/Form',
+                [
+                    'paisNombre' => $ciudad->maeDepartamento->maePais->pais,
+                    'paisID' => $ciudad->maeDepartamento->maePais->id,
+                    'departamentoNombre' =>  $ciudad->maeDepartamento->departamento,
+                    'departamentoID' => $ciudad->maeDepartamento->id,
+                    'ciudadNombre' =>  $ciudad->ciudad,
+                    'ciudadID' => $ciudad->id
+                ]
+            );
+        } else
+            return back()->withErrors(['create' => 'Debe seleccionar la Ciudad']);
     }
 
     public function store(Request $request)
@@ -111,6 +115,33 @@ class MaeBarriosController extends Controller
             // return redirect()->route('barrios.index');
         } catch (\Exception $exception) {
             return back()->withErrors(['delete' => 'Acción No disponible']);
+        }
+    }
+
+    public function importExcel(Request $request)
+    {
+        $request->validate([
+            'file' => ['required']
+        ]);
+
+        if ($request->hasFile('file')) {
+            $import = new BarriosImport();
+            $import->import($request->file);
+
+            $filas = count($import->toArray($request->file)[0]);
+            $erroresDIN = [0];
+            $errores = $import->errors();
+            if ($errores->count() > 0) {
+                $cont = 0;
+                foreach ($errores as $error) {
+                    $erroresDIN[$cont] = ['mensaje' => $error->errorInfo[2], 'detalle' => $error->getMessage(), 'filas' => $filas];
+                    $cont++;
+                }
+            } else {
+                $erroresDIN[0] = ['mensaje' => '', 'detalle' => '', 'filas' => $filas];
+            }
+
+            return redirect()->back()->withErrors([response()->json($erroresDIN, 200)->getContent()]);
         }
     }
 }

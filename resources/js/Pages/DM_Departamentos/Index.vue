@@ -36,7 +36,6 @@ const selectedPais = (event) => {
     form.get(route('departamentos.index'))
 }
 
-
 </script>
 
 <template>
@@ -60,7 +59,7 @@ const selectedPais = (event) => {
                     </div>
                 </div>
             </div>
-            <div class="mx-4 flex justify mx-auto rounded-md p-2 bg-blue-700 text-white space-x-2 border-b-2 mb-8 w-full " >
+            <div class="mx-4 block justify-start mx-auto rounded-md p-2 bg-blue-700 text-white border-b-2 mb-8 w-full " >
                 <span>Paises*</span>
                 <div>
                     <Dropdown :filter="true" v-model="form.paisID" @change="selectedPais(value)" :options="paises" optionLabel="pais" optionValue="id" placeholder="Seleccionar el Pais" />

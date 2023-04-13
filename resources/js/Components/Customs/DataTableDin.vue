@@ -10,6 +10,7 @@ import InputText from 'primevue/inputtext';
 import TriStateCheckbox from 'primevue/tristatecheckbox';
 import { useToast } from "primevue/usetoast";
 import Toast from 'primevue/toast';
+import { exportExcel } from "@/Composable/ExportData";
 
 const props = defineProps({
     model: Array,
@@ -25,11 +26,13 @@ const confirm = useConfirm();
 const emit = defineEmits(['actualizarDatos']);
 
 const registrar = () => {
-  Inertia.get(route(props.modelName+'.create'))
+    Inertia.get(route(props.modelName+'.create'))
 }
 const editar = (id) => {
-  Inertia.get(route(props.modelName+'.edit', id))
+    Inertia.get(route(props.modelName+'.edit', id))
 }
+
+const { exporting } = exportExcel(props.model, props.modelName)
 
 const deleted = (event, id) => {
     confirm.require({
@@ -38,17 +41,17 @@ const deleted = (event, id) => {
     icon: "pi pi-info-circle",
     acceptClass: "p-button-danger",
     accept: () => {
-        Inertia.delete(route(props.modelName+'.destroy', id), {
-            onSuccess: () => {
-                toast.add({severity:'success', summary: 'Success Message', detail: props.deleteName.toUpperCase() +' Eliminado(a) ' , life: 3000});
-                emit('actualizarDatos')
-            },
-            onError: (errors) => {
-                toast.add({severity:'error', summary: 'Eliminar '+props.deleteName, detail:errors.delete, life: 3000});
-            }
-        })
-    },
-  });
+            Inertia.delete(route(props.modelName+'.destroy', id), {
+                onSuccess: () => {
+                    toast.add({severity:'success', summary: 'Success Message', detail: props.deleteName.toUpperCase() +' Eliminado(a) ' , life: 3000});
+                    emit('actualizarDatos')
+                },
+                onError: (errors) => {
+                    toast.add({severity:'error', summary: 'Eliminar '+props.deleteName, detail:errors.delete, life: 3000});
+                }
+            })
+        },
+    });
 };
 
 var filtersInd = ref(props.filtersInd);
@@ -58,7 +61,6 @@ var filtersInd = ref(props.filtersInd);
 <template>
     <div>
         <Toast />
-
         <DataTable :value="props.model" :paginator="true" :rows="10"
         paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
         :rowsPerPageOptions="[5,10,20,50]"
@@ -73,8 +75,9 @@ var filtersInd = ref(props.filtersInd);
                     <i class="pi pi-search" />
                     <InputText v-model="filtersInd['global'].value" placeholder="Keyword Search" />
                 </span>
-                <div>
-                    <Button icon="pi pi-plus" class="p-button-rounded p-button-primary "  iconPos="right" v-on:click="registrar()"/>
+                <div class="flex justify-between space-x-5">
+                    <Button icon="pi pi-download" class=" p-button-success  p-button-sm" title="Descargar" @click="exporting" />
+                    <Button icon="pi pi-plus" class="p-button-rounded p-button-primary" title="Agregar"  iconPos="right" v-on:click="registrar()"/>
                 </div>
             </div>
         </template>

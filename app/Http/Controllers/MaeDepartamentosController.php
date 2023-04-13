@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Imports\DepartamentosImport;
 use App\Models\MaePais;
 use App\Models\MaeDepartamento;
 use Illuminate\Http\Request;
@@ -31,14 +32,17 @@ class MaeDepartamentosController extends Controller
 
     public function create()
     {
-        $paisNombre = MaePais::findOrFail(Session::get('byPaises'));
-        return Inertia::render(
-            'DM_Departamentos/Form',
-            [
-                'paisNombre' =>  $paisNombre->pais,
-                'paisID' =>  $paisNombre->id
-            ]
-        );
+        if ((Session::get('byPaises')) != null) {
+            $paisNombre = MaePais::findOrFail(Session::get('byPaises'));
+            return Inertia::render(
+                'DM_Departamentos/Form',
+                [
+                    'paisNombre' =>  $paisNombre->pais,
+                    'paisID' =>  $paisNombre->id
+                ]
+            );
+        } else
+            return back()->withErrors(['create' => 'Debe seleccionar el País']);
     }
 
 
@@ -110,6 +114,33 @@ class MaeDepartamentosController extends Controller
             return redirect()->route('departamentos.index', ['paisID' => $departamento->pais_id]);
         } catch (\Exception $exception) {
             return back()->withErrors(['delete' => 'Acción No disponible']);
+        }
+    }
+
+    public function importExcel(Request $request)
+    {
+        $request->validate([
+            'file' => ['required']
+        ]);
+
+        if ($request->hasFile('file')) {
+            $import = new DepartamentosImport();
+            $import->import($request->file);
+
+            $filas = count($import->toArray($request->file)[0]);
+            $erroresDIN = [0];
+            $errores = $import->errors();
+            if ($errores->count() > 0) {
+                $cont = 0;
+                foreach ($errores as $error) {
+                    $erroresDIN[$cont] = ['mensaje' => $error->errorInfo[2], 'detalle' => $error->getMessage(), 'filas' => $filas];
+                    $cont++;
+                }
+            } else {
+                $erroresDIN[0] = ['mensaje' => '', 'detalle' => '', 'filas' => $filas];
+            }
+
+            return redirect()->back()->withErrors([response()->json($erroresDIN, 200)->getContent()]);
         }
     }
 }

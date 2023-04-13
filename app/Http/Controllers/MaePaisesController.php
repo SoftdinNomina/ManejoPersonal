@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Imports\PaisesImport;
 use App\Models\MaePais;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -15,14 +16,13 @@ class MaePaisesController extends Controller
      */
     public function index()
     {
-        return Inertia::render('DM_Paises/Index', ['paises' => MaePais::all(),]);
+        return Inertia::render('DM_Paises/Index', ['paises' => MaePais::orderBy('pais')->get(),]);
     }
 
     public function getPaises()
     {
         $maePais = MaePais::all();
         return response()->json($maePais, 200);
-
     }
 
 
@@ -132,5 +132,32 @@ class MaePaisesController extends Controller
         // sleep(1);
 
         return redirect()->route('paises.index'); //->with('message', 'Pais Delete Successfully');
+    }
+
+    public function importExcel(Request $request)
+    {
+        $request->validate([
+            'file' => ['required']
+        ]);
+
+        if ($request->hasFile('file')) {
+            $import = new PaisesImport();
+            $import->import($request->file);
+
+            $filas = count($import->toArray($request->file)[0]);
+            $erroresDIN = [0];
+            $errores = $import->errors();
+            if ($errores->count() > 0) {
+                $cont = 0;
+                foreach ($errores as $error) {
+                    $erroresDIN[$cont] = ['mensaje' => $error->errorInfo[2], 'detalle' => $error->getMessage(), 'filas' => $filas];
+                    $cont++;
+                }
+            }else{
+                $erroresDIN[0] = ['mensaje' => '', 'detalle' => '', 'filas' => $filas];
+            }
+
+            return redirect()->back()->withErrors([response()->json($erroresDIN, 200)->getContent()]);
+        }
     }
 }

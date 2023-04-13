@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Imports\CiudadesImport;
 use App\Models\MaeCiudad;
 use App\Models\MaeDepartamento;
 use Illuminate\Http\Request;
@@ -29,16 +30,19 @@ class MaeCiudadesController extends Controller
 
     public function create()
     {
-        $departamento = MaeDepartamento::findOrFail(Session::get('byDepartamento'));
-        return Inertia::render(
-            'DM_Ciudades/Form',
-            [
-                'paisNombre' => $departamento->maePais->pais,
-                'paisID' => $departamento->maePais->id,
-                'departamentoNombre' =>  $departamento->departamento,
-                'departamentoID' => $departamento->id
-            ]
-        );
+        if ((Session::get('byDepartamento')) != null) {
+            $departamento = MaeDepartamento::findOrFail(Session::get('byDepartamento'));
+            return Inertia::render(
+                'DM_Ciudades/Form',
+                [
+                    'paisNombre' => $departamento->maePais->pais,
+                    'paisID' => $departamento->maePais->id,
+                    'departamentoNombre' =>  $departamento->departamento,
+                    'departamentoID' => $departamento->id
+                ]
+            );
+        } else
+        return back()->withErrors(['create' => 'Debe seleccionar el Departamento']);
     }
 
     public function store(Request $request)
@@ -111,4 +115,32 @@ class MaeCiudadesController extends Controller
             return back()->withErrors(['delete' => 'Acción No disponible']);
         }
     }
+
+    public function importExcel(Request $request)
+    {
+        $request->validate([
+            'file' => ['required']
+        ]);
+
+        if ($request->hasFile('file')) {
+            $import = new CiudadesImport();
+            $import->import($request->file);
+
+            $filas = count($import->toArray($request->file)[0]);
+            $erroresDIN = [0];
+            $errores = $import->errors();
+            if ($errores->count() > 0) {
+                $cont = 0;
+                foreach ($errores as $error) {
+                    $erroresDIN[$cont] = ['mensaje' => $error->errorInfo[2], 'detalle' => $error->getMessage(), 'filas' => $filas];
+                    $cont++;
+                }
+            }else{
+                $erroresDIN[0] = ['mensaje' => '', 'detalle' => '', 'filas' => $filas];
+            }
+
+            return redirect()->back()->withErrors([response()->json($erroresDIN, 200)->getContent()]);
+        }
+    }
+
 }

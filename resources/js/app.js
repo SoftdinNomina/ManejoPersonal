@@ -15,19 +15,6 @@ import "primeicons/primeicons.css"                           //icons
 import ConfirmationService from 'primevue/confirmationservice';
 
 const appName = window.document.getElementsByTagName('title')[0]?.innerText || 'Laravel';
-// Create a new store instance.
-// const store = createStore({
-//     state () {
-//         return {
-//         count: 99
-//     }
-//     },
-//     mutations: {
-//         increment (state) {
-//         state.count++
-//     }
-//     },
-// })
 
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,

@@ -43,8 +43,15 @@ Route::middleware([
     Route::resource('barrios', MaeBarriosController::class);
 
     Route::get('getPaises', [MaePaisesController::class, 'getPaises'])->name('getPaises');
+    Route::post('import_list_excel', [MaePaisesController::class, 'importExcel'])->name('paises_import');
+
     Route::get('getDepartamentos/{paisID}', [MaeDepartamentosController::class, 'getDepartamentos'])->name('getDepartamentos');
+    Route::post('import_list_excel', [MaeDepartamentosController::class, 'importExcel'])->name('departamentos_import');
+
     Route::get('getCiudades/{departamentoID}', [MaeCiudadesController::class, 'getCiudades'])->name('getCiudades');
+    Route::post('import_list_excel', [MaeCiudadesController::class, 'importExcel'])->name('ciudades_import');
+
     Route::get('getBarrios/{barrioID}', [MaeBarriosController::class, 'getBarrios'])->name('getBarrios');
- 
+    Route::post('import_list_excel', [MaeBarriosController::class, 'importExcel'])->name('barrios_import');
+
 });

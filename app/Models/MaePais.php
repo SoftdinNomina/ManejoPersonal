@@ -35,4 +35,6 @@ class MaePais extends Model
     //         set: fn ($value) => $value,
     //     );
     // }
+    
+
 }

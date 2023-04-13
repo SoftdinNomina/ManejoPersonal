@@ -6,6 +6,7 @@ import DataTableDin from '@/Components/Customs/DataTableDin.vue';
 defineProps({
     paises: Array,
 })
+
 const columnas = [{field: 'id', header:'ID'},
 {field:'pais', header:'Pais', typeFilter: 'text'},
 {field: 'codigo_alfa2', header:'Codigo Alfa2', typeFilter: 'text'},
@@ -14,6 +15,7 @@ const columnas = [{field: 'id', header:'ID'},
 {field: 'continente', header:'Continente', typeFilter: 'text'},
 {field: 'activo', header:'Activo', dataType:"boolean"},
 ]
+
 const filterColumnasGen = ['pais',
 'codigo_alfa2',
 'codigo_alfa3',
@@ -21,6 +23,7 @@ const filterColumnasGen = ['pais',
 'continente',
 'activo'
 ]
+
 const filtersInd =  {
     'global': {value: null, matchMode: FilterMatchMode.CONTAINS},
     'pais': {operator: FilterOperator.AND, constraints: [{value: null, matchMode: FilterMatchMode.STARTS_WITH}]},
@@ -30,6 +33,7 @@ const filtersInd =  {
     'continente': {operator: FilterOperator.AND, constraints: [{value: null, matchMode: FilterMatchMode.STARTS_WITH}]}
     // 'activo':  {value: null, matchMode: FilterMatchMode.EQUALS}
 }
+
 </script>
 
 <template>
