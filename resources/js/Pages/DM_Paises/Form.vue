@@ -1,6 +1,5 @@
 <script setup>
 import { ref } from 'vue';
-import { Inertia } from '@inertiajs/inertia';
 import { useForm } from "@inertiajs/inertia-vue3";
 import Button from 'primevue/button';
 import AppLayout from '@/Layouts/AppLayout.vue';

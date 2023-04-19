@@ -9,7 +9,6 @@ import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
 import TriStateCheckbox from 'primevue/tristatecheckbox';
 import { useToast } from "primevue/usetoast";
-import Toast from 'primevue/toast';
 import { exportExcel } from "@/Composable/ExportData";
 
 const props = defineProps({
@@ -23,10 +22,14 @@ const props = defineProps({
 
 const toast = useToast();
 const confirm = useConfirm();
-const emit = defineEmits(['actualizarDatos']);
 
 const registrar = () => {
-    Inertia.get(route(props.modelName+'.create'))
+    Inertia.get(route(props.modelName+'.create') , {
+                onError: (errors) => {
+                    toast.add({severity:'error', summary: 'Error', detail:errors.create, life: 3000});
+                }
+            }
+        );
 }
 const editar = (id) => {
     Inertia.get(route(props.modelName+'.edit', id))
@@ -44,7 +47,7 @@ const deleted = (event, id) => {
             Inertia.delete(route(props.modelName+'.destroy', id), {
                 onSuccess: () => {
                     toast.add({severity:'success', summary: 'Success Message', detail: props.deleteName.toUpperCase() +' Eliminado(a) ' , life: 3000});
-                    emit('actualizarDatos')
+                    // emit('actualizarDatos')
                 },
                 onError: (errors) => {
                     toast.add({severity:'error', summary: 'Eliminar '+props.deleteName, detail:errors.delete, life: 3000});
@@ -60,7 +63,6 @@ var filtersInd = ref(props.filtersInd);
 
 <template>
     <div>
-        <Toast />
         <DataTable :value="props.model" :paginator="true" :rows="10"
         paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
         :rowsPerPageOptions="[5,10,20,50]"

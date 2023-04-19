@@ -10,6 +10,7 @@ const props = defineProps({
     paises: Array,
     paisID: Number
 })
+
 const columnas = [
 {field:'departamento', header:'Departamento', typeFilter: 'text'},
 {field: 'codigodane', header:'Codigo Dane', typeFilter: 'text'},

@@ -21,7 +21,7 @@ class MaePaisesController extends Controller
 
     public function getPaises()
     {
-        $maePais = MaePais::all();
+        $maePais = MaePais::orderBy('pais')->get();
         return response()->json($maePais, 200);
     }
 
@@ -145,7 +145,7 @@ class MaePaisesController extends Controller
             $import->import($request->file);
 
             $filas = count($import->toArray($request->file)[0]);
-            $erroresDIN = [0];
+            $erroresDIN = [];
             $errores = $import->errors();
             if ($errores->count() > 0) {
                 $cont = 0;
@@ -153,11 +153,12 @@ class MaePaisesController extends Controller
                     $erroresDIN[$cont] = ['mensaje' => $error->errorInfo[2], 'detalle' => $error->getMessage(), 'filas' => $filas];
                     $cont++;
                 }
-            }else{
-                $erroresDIN[0] = ['mensaje' => '', 'detalle' => '', 'filas' => $filas];
             }
 
-            return redirect()->back()->withErrors([response()->json($erroresDIN, 200)->getContent()]);
+            if (count($erroresDIN) > 0)
+                return redirect()->back()->withErrors([response()->json($erroresDIN, 200)->getContent()]);
+            else
+                return redirect()->back();
         }
     }
 }

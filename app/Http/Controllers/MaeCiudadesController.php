@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Imports\CiudadesImport;
 use App\Models\MaeCiudad;
+use App\Models\MaePais;
 use App\Models\MaeDepartamento;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -15,9 +16,20 @@ class MaeCiudadesController extends Controller
 
     public function index(Request $request)
     {
+        $maeCiudades = null;
+        $paisID = 0;
+        $departamentoID = 0;
+        if ($request->departamentoID != null && $request->departamentoID > 0) {
+            $maeCiudades = MaeCiudad::where('departamento_id', $request->departamentoID)->orderBy('ciudad')->get();
+            $paisID = $request->paisID;
+            $departamentoID = $request->departamentoID;
+        }
+        session()->put('byDepartamento',  $departamentoID);
+        session()->put('byPais',  $paisID);
         return Inertia::render('DM_Ciudades/Index', [
-            'paisID' => $request->paisID,
-            'departamentoID' => $request->departamentoID,
+            'ciudades' => $maeCiudades,
+            'paisID' => $paisID,
+            'departamentoID' => $departamentoID,
         ]);
     }
 
@@ -30,7 +42,7 @@ class MaeCiudadesController extends Controller
 
     public function create()
     {
-        if ((Session::get('byDepartamento')) != null) {
+        if ((Session::get('byDepartamento')) != null && Session::get('byDepartamento') > 0) {
             $departamento = MaeDepartamento::findOrFail(Session::get('byDepartamento'));
             return Inertia::render(
                 'DM_Ciudades/Form',
@@ -41,7 +53,8 @@ class MaeCiudadesController extends Controller
                     'departamentoID' => $departamento->id
                 ]
             );
-        } else
+        }
+
         return back()->withErrors(['create' => 'Debe seleccionar el Departamento']);
     }
 
@@ -119,15 +132,16 @@ class MaeCiudadesController extends Controller
     public function importExcel(Request $request)
     {
         $request->validate([
-            'file' => ['required']
+            'file' => ['required'],
+            'departamentoID' => ['required']
         ]);
 
         if ($request->hasFile('file')) {
-            $import = new CiudadesImport();
+            $import = new CiudadesImport($request->departamentoID);
             $import->import($request->file);
 
             $filas = count($import->toArray($request->file)[0]);
-            $erroresDIN = [0];
+            $erroresDIN = [];
             $errores = $import->errors();
             if ($errores->count() > 0) {
                 $cont = 0;
@@ -135,12 +149,12 @@ class MaeCiudadesController extends Controller
                     $erroresDIN[$cont] = ['mensaje' => $error->errorInfo[2], 'detalle' => $error->getMessage(), 'filas' => $filas];
                     $cont++;
                 }
-            }else{
-                $erroresDIN[0] = ['mensaje' => '', 'detalle' => '', 'filas' => $filas];
             }
 
-            return redirect()->back()->withErrors([response()->json($erroresDIN, 200)->getContent()]);
+            if (count($erroresDIN) > 0)
+                return redirect()->back()->withErrors([response()->json($erroresDIN, 200)->getContent()]);
+            else
+                return redirect()->back();
         }
     }
-
 }

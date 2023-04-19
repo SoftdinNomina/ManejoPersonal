@@ -15,23 +15,38 @@ class MaeBarriosController extends Controller
 
     public function index(Request $request)
     {
+        $maeBarrios = null;
+        $paisID = 0;
+        $departamentoID = 0;
+        $ciudadID = 0;
+        if ($request->ciudadID != null && $request->ciudadID > 0) {
+            $maeBarrios = MaeBarrio::where('ciudad_id', $request->ciudadID)->orderBy('barrio')->get();
+            $paisID = $request->paisID;
+            $departamentoID = $request->departamentoID;
+            $ciudadID = $request->ciudadID;
+        }
+        session()->put('byCiudad',  $ciudadID);
+        session()->put('byDepartamento',  $departamentoID);
+        session()->put('byPais',  $paisID);
+
         return Inertia::render('DM_Barrios/Index', [
-            'paisID' => $request->paisID,
-            'departamentoID' => $request->departamentoID,
-            'ciudadID' => $request->ciudadID,
+            'barrios' => $maeBarrios,
+            'paisID' => $paisID,
+            'departamentoID' => $departamentoID,
+            'ciudadID' => $ciudadID,
         ]);
     }
 
-    public function getBarrios($ciudadID)
-    {
-        $maeBarrios = MaeBarrio::where('ciudad_id', $ciudadID)->orderBy('barrio')->get();
-        session()->put('byCiudad', $ciudadID);
-        return response()->json($maeBarrios, 200);
-    }
+    // public function getBarrios($ciudadID)
+    // {
+    //     $maeBarrios = MaeBarrio::where('ciudad_id', $ciudadID)->orderBy('barrio')->get();
+    //     session()->put('byCiudad', $ciudadID);
+    //     return response()->json($maeBarrios, 200);
+    // }
 
     public function create()
     {
-        if ((Session::get('byCiudad')) != null) {
+        if ((Session::get('byCiudad')) != null && (Session::get('byCiudad')) > 0) {
             $ciudad = MaeCiudad::findOrFail(Session::get('byCiudad'));
             return Inertia::render(
                 'DM_Barrios/Form',
@@ -44,8 +59,9 @@ class MaeBarriosController extends Controller
                     'ciudadID' => $ciudad->id
                 ]
             );
-        } else
-            return back()->withErrors(['create' => 'Debe seleccionar la Ciudad']);
+        }
+
+        return back()->withErrors(['create' => 'Debe seleccionar la Ciudad']);
     }
 
     public function store(Request $request)
@@ -121,27 +137,30 @@ class MaeBarriosController extends Controller
     public function importExcel(Request $request)
     {
         $request->validate([
-            'file' => ['required']
+            'file' => ['required'],
+            'ciudadID' => ['required']
         ]);
 
         if ($request->hasFile('file')) {
-            $import = new BarriosImport();
+            $import = new BarriosImport($request->ciudadID);
             $import->import($request->file);
 
             $filas = count($import->toArray($request->file)[0]);
-            $erroresDIN = [0];
+            $erroresDIN = [];
             $errores = $import->errors();
+            // dd($errores);
             if ($errores->count() > 0) {
                 $cont = 0;
                 foreach ($errores as $error) {
                     $erroresDIN[$cont] = ['mensaje' => $error->errorInfo[2], 'detalle' => $error->getMessage(), 'filas' => $filas];
                     $cont++;
                 }
-            } else {
-                $erroresDIN[0] = ['mensaje' => '', 'detalle' => '', 'filas' => $filas];
             }
-
-            return redirect()->back()->withErrors([response()->json($erroresDIN, 200)->getContent()]);
+            // dd(response()->json($erroresDIN));
+            if (count($erroresDIN) > 0)
+                return redirect()->back()->withErrors( ['data'=> response()->json($erroresDIN)->getContent()]);
+            else
+                return redirect()->back();
         }
     }
 }

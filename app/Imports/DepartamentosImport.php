@@ -3,6 +3,7 @@
 namespace App\Imports;
 
 use App\Models\MaeDepartamento;
+use App\Models\MaePais;
 use Illuminate\Validation\Rule;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\Importable;
@@ -14,17 +15,25 @@ use Maatwebsite\Excel\Concerns\SkipsErrors;
 class DepartamentosImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnError
 {
     use Importable, SkipsErrors;
+    public $idPais;
 
+    public function __construct($paisID)
+    {
+        $this->idPais = $paisID;
+    }
     /**
-    * @param array $row
-    *
-    * @return \Illuminate\Database\Eloquent\Model|null
-    */
+     * @param array $row
+     *
+     * @return \Illuminate\Database\Eloquent\Model|null
+     */
     public function model(array $row)
     {
-        
         return new MaeDepartamento([
-            //
+            'pais_id' => $this->idPais,
+            'departamento' => $row['departamento'],
+            'codigodane' => $row['codigodane'],
+            'codigo_iso' => $row['codigo_iso'],
+            'activo' => $row['activo'],
         ]);
     }
 

@@ -27,8 +27,6 @@ const logout = () => {
     Inertia.post(route('logout'));
 };
 
-
-
 </script>
 
 <template>
@@ -285,7 +283,7 @@ const logout = () => {
                 </div>
             </nav>
             <!-- <Message :life="2000" :sticky="false">Welcome to PrimeVue</Message> -->
-            
+
             <!-- Page Heading -->
             <header v-if="$slots.header" class="bg-white shadow">
                 <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">

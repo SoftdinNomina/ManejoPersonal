@@ -15,6 +15,14 @@ class CiudadesImport implements ToModel, WithHeadingRow, WithValidation, SkipsOn
 {
     use Importable, SkipsErrors;
 
+    public $idDepartamento;
+
+    public function __construct($departamentoID)
+    {
+        $this->idDepartamento = $departamentoID;
+    }
+
+
     /**
     * @param array $row
     *
@@ -23,7 +31,10 @@ class CiudadesImport implements ToModel, WithHeadingRow, WithValidation, SkipsOn
     public function model(array $row)
     {
         return new MaeCiudad([
-            //
+            'departamento_id' => $this->idDepartamento,
+            'ciudad' => $row['ciudad'],
+            'codigodane' => $row['codigodane'],
+            'activo' => $row['activo'],
         ]);
     }
 

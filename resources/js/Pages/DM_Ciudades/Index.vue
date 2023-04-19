@@ -1,17 +1,11 @@
 <script setup>
-import { ref, onMounted } from 'vue';
 import {FilterMatchMode,FilterOperator} from 'primevue/api';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import DataTableDin from '@/Components/Customs/DataTableDin.vue';
 import DropdownDepartamentoDin from '../../Components/Customs/DropdownDepartamentoDin.vue';
-import axios from 'axios';
+import Toast from 'primevue/toast';
+import {useForm} from '@inertiajs/inertia-vue3';
 
-
-var ciudades = ref([])
-
-const vm = {
-    ID_departamento: 0
-}
 
 const columnas = [
 {field:'ciudad', header:'Ciudad', typeFilter: 'text'},
@@ -29,31 +23,28 @@ const filtersInd =  {
     'codigodane': {operator: FilterOperator.AND, constraints: [{value: null, matchMode: FilterMatchMode.STARTS_WITH}]},
 }
 
-const selectedDepartamento = (id) => {
-        axios.get(route('getCiudades', id)).then((res) => {ciudades.value = res.data})
-        vm.ID_departamento = id
-}
-
-const actualizarDatos = () => {
-        axios.get(route('getCiudades', vm.ID_departamento)).then((res) => {ciudades.value = res.data})
+const selectedDepartamento = (idD, idP) => {
+        form.departamentoID = idD;
+        form.paisID = idP;
+        form.get(route('ciudades.index'));
 }
 
 const props = defineProps({
+    ciudades:Array,
     paisID: Number,
     departamentoID: Number,
 })
 
-onMounted (() => {
-    if(props.departamentoID > 0)
-        vm.ID_departamento = props.departamentoID
-    axios.get(route('getCiudades', vm.ID_departamento)).then(res =>( ciudades.value = res.data));
-
+const form = useForm({
+    paisID: parseInt(props.paisID),
+    departamentoID: parseInt(props.departamentoID),
 })
 
 </script>
 
 <template>
     <AppLayout title="Ciudades">
+        <Toast />
         <div class=" px-4 py-5 md:px-6 lg:px-8 block md:flex justify-between">
             <div>
                 <ul class="list-none p-0 m-0 flex align-items-center font-medium mb-3">
@@ -78,10 +69,7 @@ onMounted (() => {
             </div>
         </div>
 
-        <!-- <div>{{ count  }}</div> -->
-
-        <!-- <div>{{ $store.state.count }}</div> -->
-        <DataTableDin :model="ciudades" :columnas="columnas" :filterColumnasGen="filterColumnasGen" :filtersInd="filtersInd" modelName="ciudades" deleteName="ciudad" @actualizar-datos=actualizarDatos   >
+        <DataTableDin :model="ciudades" :columnas="columnas" :filterColumnasGen="filterColumnasGen" :filtersInd="filtersInd" modelName="ciudades" deleteName="ciudad" >
         </DataTableDin>
     </AppLayout>
 </template>

@@ -24,15 +24,3 @@ export function exportExcel(data, nameFile){
         });
     }
 }
-
-// export function filasExcel(filename){
-//     var filas = 0;
-//     import('xlsx').then(xlsx => {
-//         console.log(filename);
-//         const wb = xlsx.readFile(filename);
-//         filas = wb.Sheets[wb.SheetNames[0]].length;
-//         console.log(filas);
-
-//     });
-//     return {filas};
-// }

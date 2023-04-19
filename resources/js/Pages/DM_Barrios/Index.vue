@@ -1,17 +1,11 @@
 <script setup>
-import { ref, onMounted } from 'vue';
 import {FilterMatchMode,FilterOperator} from 'primevue/api';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import DataTableDin from '@/Components/Customs/DataTableDin.vue';
 import DropdownCiudadDin from '../../Components/Customs/DropdownCiudadDin.vue';
-import axios from 'axios';
+import Toast from 'primevue/toast';
+import {useForm} from '@inertiajs/inertia-vue3';
 
-
-var barrios = ref([])
-
-const vm = {
-    ID_ciudad: 0
-}
 
 const columnas = [
 {field:'barrio', header:'Barrio', typeFilter: 'text'},
@@ -25,31 +19,31 @@ const filtersInd =  {
     'barrio': {operator: FilterOperator.AND, constraints: [{value: null, matchMode: FilterMatchMode.STARTS_WITH}]},
 }
 
-const selectedCiudad = (id) => {
-        axios.get(route('getBarrios', id)).then((res) => {barrios.value = res.data})
-        vm.ID_ciudad = id
-}
-
-const actualizarDatos = () => {
-        axios.get(route('getBarrios', vm.ID_ciudad)).then((res) => {barrios.value = res.data})
+const selectedCiudad = (idC, idD, idP) => {
+    form.ciudadID = idC;
+    form.departamentoID = idD;
+    form.paisID = idP;
+    form.get(route('barrios.index'));
 }
 
 const props = defineProps({
+    barrios: Array,
     paisID: Number,
     departamentoID: Number,
     ciudadID: Number,
 })
 
-onMounted (() => {
-    if(props.ciudadID > 0)
-        vm.ID_ciudad = props.ciudadID
-    axios.get(route('getBarrios', vm.ID_ciudad)).then(res =>( barrios.value = res.data));
+const form = useForm({
+    paisID: parseInt(props.paisID),
+    departamentoID: parseInt(props.departamentoID),
+    ciudadID: parseInt(props.ciudadID),
 })
 
 </script>
 
 <template>
     <AppLayout title="Barrios">
+        <Toast />
         <div class=" px-4 py-5 md:px-6 lg:px-8 block md:flex justify-between">
             <div>
                 <ul class="list-none p-0 m-0 flex align-items-center font-medium mb-3">
@@ -74,7 +68,7 @@ onMounted (() => {
             </div>
         </div>
 
-        <DataTableDin :model="barrios" :columnas="columnas" :filterColumnasGen="filterColumnasGen" :filtersInd="filtersInd" modelName="barrios" deleteName="barrio" @actualizar-datos=actualizarDatos >
+        <DataTableDin :model="barrios" :columnas="columnas" :filterColumnasGen="filterColumnasGen" :filtersInd="filtersInd" modelName="barrios" deleteName="barrio"  >
         </DataTableDin>
     </AppLayout>
 </template>

@@ -32,7 +32,7 @@ const selectedPais = (event) => {
 }
 
 const selectedDepartamento = (event) => {
-    emit('selectedDepartamento', form.departamentoID)
+    emit('selectedDepartamento', form.departamentoID, form.paisID)
  }
 
 </script>

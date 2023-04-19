@@ -14,25 +14,31 @@ class MaeDepartamentosController extends Controller
 
     public function index(Request $request)
     {
-        $maeDepartamentos = MaeDepartamento::where('pais_id', $request->paisID)->orderBy('departamento')->get();
-        $maePaises = MaePais::all();
-        session()->put('byPaises', $request->paisID);
+        $maeDepartamentos = null;
+        $paisID = 0;
+        if ($request->paisID != null && $request->paisID > 0) {
+            $maeDepartamentos = MaeDepartamento::where('pais_id', $request->paisID)->orderBy('departamento')->get();
+            $paisID = $request->paisID;
+        }
+        $maePaises = MaePais::orderBy('pais')->get();
+        session()->put('byPaises', $paisID);
         return Inertia::render('DM_Departamentos/Index', [
             'departamentos' => $maeDepartamentos,
             'paises' => $maePaises,
-            'paisID' => $request->paisID,
+            'paisID' => $paisID,
         ]);
     }
 
     public function getDepartamentos($paisID)
     {
         $maeDepartamentos = MaeDepartamento::where('pais_id', $paisID)->orderBy('departamento')->get();
+        session()->put('byPaises', $paisID);
         return response()->json($maeDepartamentos, 200);
     }
 
     public function create()
     {
-        if ((Session::get('byPaises')) != null) {
+        if ((Session::get('byPaises')) != null && Session::get('byPaises') > 0) {
             $paisNombre = MaePais::findOrFail(Session::get('byPaises'));
             return Inertia::render(
                 'DM_Departamentos/Form',
@@ -41,8 +47,8 @@ class MaeDepartamentosController extends Controller
                     'paisID' =>  $paisNombre->id
                 ]
             );
-        } else
-            return back()->withErrors(['create' => 'Debe seleccionar el País']);
+        }
+        return redirect()->back()->withErrors(['create' => 'Debe seleccionar el País']);
     }
 
 
@@ -120,15 +126,15 @@ class MaeDepartamentosController extends Controller
     public function importExcel(Request $request)
     {
         $request->validate([
-            'file' => ['required']
+            'file' => ['required'],
+            'paisID' => ['required']
         ]);
 
         if ($request->hasFile('file')) {
-            $import = new DepartamentosImport();
+            $import = new DepartamentosImport($request->paisID);
             $import->import($request->file);
-
             $filas = count($import->toArray($request->file)[0]);
-            $erroresDIN = [0];
+            $erroresDIN = [];
             $errores = $import->errors();
             if ($errores->count() > 0) {
                 $cont = 0;
@@ -136,11 +142,12 @@ class MaeDepartamentosController extends Controller
                     $erroresDIN[$cont] = ['mensaje' => $error->errorInfo[2], 'detalle' => $error->getMessage(), 'filas' => $filas];
                     $cont++;
                 }
-            } else {
-                $erroresDIN[0] = ['mensaje' => '', 'detalle' => '', 'filas' => $filas];
             }
 
-            return redirect()->back()->withErrors([response()->json($erroresDIN, 200)->getContent()]);
+            if (count($erroresDIN) > 0)
+                return redirect()->back()->withErrors([response()->json($erroresDIN, 200)->getContent()]);
+            else
+                return redirect()->back();
         }
     }
 }

@@ -15,15 +15,24 @@ class BarriosImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnE
 {
     use Importable, SkipsErrors;
 
+    public $idCiudad;
+
+    public function __construct($ciudadID)
+    {
+        $this->idCiudad = $ciudadID;
+    }
+
     /**
-    * @param array $row
-    *
-    * @return \Illuminate\Database\Eloquent\Model|null
-    */
+     * @param array $row
+     *
+     * @return \Illuminate\Database\Eloquent\Model|null
+     */
     public function model(array $row)
     {
         return new MaeBarrio([
-            //
+            'ciudad_id' => $this->idCiudad,
+            'barrio' => $row['barrio'],
+            'activo' => $row['activo'],
         ]);
     }
 
