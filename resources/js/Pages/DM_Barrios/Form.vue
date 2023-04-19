@@ -59,12 +59,12 @@ const uploadEvent = (callback) => {
                 onError: (errors) => {
                     console.log(errors);
                     archivoErrores = JSON.parse(errors['data']); //JSON.parse(errors['data']);
-                    // formArchivo.length = archivoErrores[0]['filas'];
+                    formArchivo.length = archivoErrores[0]['filas'];
                     // str_json = JSON.parse(array);
-                    console.log(archivoErrores);
-                    archivoErrores.forEach(function (item, index) {
-                        console.log(item);
-                    });
+                    // console.log(archivoErrores);
+                    // archivoErrores.forEach(function (item, index) {
+                    //     console.log(item);
+                    // });
                     // console.log(archivoErrores);
                     toast.add({severity:'error', summary: 'Error', detail:'Importación con Novedad o NO Exitosa', life: 3000});
                 }
