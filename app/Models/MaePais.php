@@ -25,6 +25,7 @@ class MaePais extends Model
         'codigo_alfa3',
         'codigo_numerico',
         'continente',
+        'bandera',
         'activo',
     ];
 
@@ -35,6 +36,6 @@ class MaePais extends Model
     //         set: fn ($value) => $value,
     //     );
     // }
-    
+
 
 }

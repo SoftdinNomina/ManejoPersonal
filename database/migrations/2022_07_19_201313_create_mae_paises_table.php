@@ -20,6 +20,7 @@ class CreateMaePaisesTable extends Migration
             $table->string('codigo_alfa3', 10)->nullable()->unique('ix_mae_pais_codigo_alfa3');
             $table->string('codigo_numerico', 10)->nullable()->unique('ix_mae_pais_codigo_numerico');
             $table->string('continente', 50)->nullable();
+            $table->string('bandera')->nullable();
             $table->boolean('activo');
             $table->timestamps();
         });
