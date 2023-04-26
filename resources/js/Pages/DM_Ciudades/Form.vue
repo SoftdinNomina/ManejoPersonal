@@ -110,9 +110,9 @@ const submit = (id) => {
                 <div class="overflow-hidden bg-white shadow-sm rounded-xl">
                     <div class="p-6 border-b border-gray-200 ">
                         <div class="flex justify-between mx-auto rounded-md p-2 bg-blue-700 text-white space-x-2 border-b-2 mb-8">
-                            <BackButtonDin />
+                            <BackButtonDin class="float-left" />
                             <span class="text-2xl  mt-1 font-bold capitalize mx-2">{{ props.ciudad == null ? 'crear':'editar' }} Ciudad</span>
-                            <Button icon="pi pi-upload" class=" p-button-primary  p-button-sm"  title="Importar" @click="visible = true"/>
+                            <Button v-if="props.barrio == null"  icon="pi pi-upload" class=" p-button-primary  p-button-sm"  title="Importar" @click="visible = true"/>
                         </div>
                         <form @submit.prevent="submit(form.id)">
                             <div class="w-full grid grid-cols-1 md:grid-cols-4 gap-2 space-y-4">
@@ -221,7 +221,7 @@ const submit = (id) => {
         </Dialog>
         <Dialog v-model:visible="visibleErrores" modal header="Errores de la importación del archivo"  :style="{ width: '50vw' }">
             <div class="flex justify-between space-x-5">
-                <Button icon="pi pi-download" class=" p-button-success  p-button-sm" title="Descargar" @click="exporting" />
+                <!-- <Button icon="pi pi-download" class=" p-button-success  p-button-sm" title="Descargar" @click="exporting" /> -->
             </div>
             <div class="card">
                 <div v-for="(archivoError, key ) of archivoErrores" v-bind:key="key" >

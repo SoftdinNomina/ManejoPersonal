@@ -42,7 +42,7 @@ const selectedPais = (event) => {
 <template>
     <AppLayout title="Departamentos">
         <div class=" px-4 py-5 md:px-6 lg:px-8 block md:flex justify-between">
-            <div>
+            <div  class="mx-4 ">
                 <ul class="list-none p-0 m-0 flex align-items-center font-medium mb-3">
                     <li>
                         <a class="text-500 no-underline line-height-3 cursor-pointer">Inicio</a>

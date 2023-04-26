@@ -11,6 +11,7 @@ import FileUpload from 'primevue/fileupload';
 import Toast from 'primevue/toast';
 import { useToast } from "primevue/usetoast";
 import { exportExcel } from "@/Composable/ExportData";
+// import XLSX from 'xlsx';
 
 const formArchivo = useForm({
     file: null,
@@ -61,7 +62,7 @@ const uploadEvent = (callback) => {
                     archivoErrores = JSON.parse(errors['data']); //JSON.parse(errors['data']);
                     formArchivo.length = archivoErrores[0]['filas'];
                     // str_json = JSON.parse(array);
-                    // console.log(archivoErrores);
+                    console.log(archivoErrores);
                     // archivoErrores.forEach(function (item, index) {
                     //     console.log(item);
                     // });
@@ -108,6 +109,14 @@ const submit = (id) => {
     }
     form.post(route("barrios.store"));
 };
+
+// const expExcell = () => {
+//     const worksheet = XLSX.utils.json_to_sheet(archivoErrores);
+//     const workbook = XLSX.utils.book_new();
+//     XLSX.utils.book_append_sheet(workbook, worksheet, 'Datos');
+//     XLSX.writeFile(workbook, 'datos.xlsx');
+// };
+
 </script>
 
 <template>
@@ -116,12 +125,10 @@ const submit = (id) => {
             <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
                 <div class="overflow-hidden bg-white shadow-sm rounded-xl">
                     <div class="p-6 border-b border-gray-200 ">
-                        <div class="flex justify-between mx-auto rounded-md p-2 bg-blue-700 text-white space-x-2 border-b-2 mb-8">
-                            <BackButtonDin />
-                            <span class="text-2xl  mt-1 font-bold capitalize mx-2 ">{{ props.barrio == null ? 'crear':'editar' }} Barrio</span>
-                            <!-- <div v-if="props.barrio == null"> -->
-                                <Button  icon="pi pi-upload" class=" p-button-primary  p-button-sm"  title="Importar" @click="visible = true"/>
-                            <!-- </div> -->
+                        <div class="text-center mx-auto rounded-md p-2 bg-blue-700 text-white space-x-2 border-b-2 mb-8">
+                            <BackButtonDin class="float-left" />
+                            <span class="text-2xl  mt-1 font-bold capitalize mx-2">{{ props.barrio == null ? 'crear':'editar' }} Barrio</span>
+                            <Button v-if="props.barrio == null"  icon="pi pi-upload" class=" p-button-primary  p-button-sm float-right"  title="Importar" @click="visible = true"/>
                         </div>
                         <form @submit.prevent="submit(form.id)">
                             <div class="w-full grid grid-cols-1 md:grid-cols-4 gap-2 space-y-4">
@@ -234,7 +241,7 @@ const submit = (id) => {
         </Dialog>
         <Dialog v-model:visible="visibleErrores" modal header="Errores de la importación del archivo"  :style="{ width: '50vw' }">
             <div class="flex justify-between space-x-5">
-                <Button icon="pi pi-download" class=" p-button-success  p-button-sm" title="Descargar" @click="exporting" />
+                <!-- <Button icon="pi pi-download" class=" p-button-success  p-button-sm " title="Descargar" @click="exporting" /> -->
             </div>
             <div class="card">
                 <div v-for="(archivoError, key ) of archivoErrores" v-bind:key="key" >

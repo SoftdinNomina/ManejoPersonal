@@ -220,7 +220,7 @@ const submit = (id) => {
         </Dialog>
         <Dialog v-model:visible="visibleErrores" modal header="Errores de la importación del archivo"  :style="{ width: '50vw' }">
             <div class="flex justify-between space-x-5">
-                <Button icon="pi pi-download" class=" p-button-success  p-button-sm" title="Descargar" @click="exporting" />
+                <!-- <Button icon="pi pi-download" class=" p-button-success  p-button-sm" title="Descargar" @click="exporting" /> -->
             </div>
             <div class="card">
                 <div v-for="(archivoError, key ) of archivoErrores" v-bind:key="key" >

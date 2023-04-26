@@ -46,7 +46,7 @@ const form = useForm({
     <AppLayout title="Ciudades">
         <Toast />
         <div class=" px-4 py-5 md:px-6 lg:px-8 block md:flex justify-between">
-            <div>
+            <div class="mx-4 ">
                 <ul class="list-none p-0 m-0 flex align-items-center font-medium mb-3">
                     <li>
                         <a class="text-500 no-underline line-height-3 cursor-pointer">Inicio</a>
@@ -64,7 +64,7 @@ const form = useForm({
                     </div>
                 </div>
             </div>
-            <div class="mx-4 flex justify mx-auto rounded-md p-2 bg-blue-700 text-white space-x-2 border-b-2 mb-8 w-full ">
+            <div class="mx-4 block justify-start  mx-auto rounded-md p-2 bg-blue-700 text-white space-x-2 border-b-2 mb-8 w-full ">
                 <DropdownDepartamentoDin  @selected-departamento=selectedDepartamento  :_paisID="props.paisID" :_departamentoID="props.departamentoID"/>
             </div>
         </div>
