@@ -117,10 +117,10 @@ const submit = (id) => {
             <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
                 <div class="overflow-hidden bg-white shadow-sm rounded-xl">
                     <div class="p-6 border-b border-gray-200 ">
-                        <div class="flex justify-between mx-auto rounded-md p-2 bg-blue-700 text-white space-x-2 border-b-2 mb-8">
-                            <BackButtonDin />
+                        <div class="text-center mx-auto rounded-md p-2 bg-blue-700 text-white space-x-2 border-b-2 mb-8">
+                            <BackButtonDin class="float-left"  />
                             <span class="text-2xl  mt-1 font-bold capitalize mx-2">{{ props.pais == null ? 'crear':'editar' }} Pais</span>
-                            <Button icon="pi pi-upload" class=" p-button-primary  p-button-sm"  title="Importar" @click="visible = true"/>
+                            <Button v-if="props.pais == null"  icon="pi pi-upload" class=" p-button-primary  p-button-sm float-right"  title="Importar" @click="visible = true"/>
                         </div>
                         <form @submit.prevent="submit(form.id)">
                             <div class="w-full grid grid-cols-1 md:grid-cols-4 gap-2 space-y-4">
