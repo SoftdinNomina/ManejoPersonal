@@ -61,7 +61,7 @@ const selectedPais = (event) => {
                 </div>
             </div>
             <div class="mx-4 block justify-start mx-auto rounded-md p-2 bg-blue-700 text-white border-b-2 mb-8 w-full " >
-                <span>Paises*</span>
+                <span>Pais*</span>
                 <div>
                     <Dropdown :filter="true" v-model="form.paisID" @change="selectedPais(value)" :options="paises" optionLabel="pais" optionValue="id" placeholder="Seleccionar el Pais" />
                 </div>
