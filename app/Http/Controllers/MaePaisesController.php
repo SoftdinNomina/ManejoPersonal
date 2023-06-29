@@ -6,6 +6,7 @@ use App\Imports\PaisesImport;
 use App\Models\MaePais;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Softdin\Servicio\libreria;
 
 class MaePaisesController extends Controller
 {
@@ -33,6 +34,9 @@ class MaePaisesController extends Controller
      */
     public function create()
     {
+        // $l = libreria::empresa();
+        // return $l;
+
         return Inertia::render(
             'DM_Paises/Form'
         );
